@@ -12,14 +12,17 @@ RUN apk --update --no-cache add \
         libzip-dev \
         libexif \
         libxml2-dev \
-        libexif-dev && \
-    docker-php-ext-install pdo pdo_pgsql && \
+        libexif-dev \
+        icu-dev && \
+    docker-php-ext-install pdo_mysql && \
     docker-php-ext-install bcmath && \
     docker-php-ext-install gd && \
     docker-php-ext-install zip && \
     docker-php-ext-configure exif && \
     docker-php-ext-install exif && \
     docker-php-ext-install soap && \
+    docker-php-ext-install pdo pdo_pgsql && \
+    docker-php-ext-install intl && \
     rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
 
 COPY ./_docker/app/php.ini /usr/local/etc/php/conf.d/php.ini
