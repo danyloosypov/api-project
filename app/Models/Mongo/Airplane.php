@@ -1,12 +1,16 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Mongo;
 
-use Illuminate\Database\Eloquent\Model;
+//use Illuminate\Database\Eloquent\Model;
+use MongoDB\Laravel\Eloquent\Model;
 
 class Airplane extends Model
 {
+    protected $connection = 'mongodb';
+    protected $collection = 'airplanes';
     protected $fillable = [
+        'guid',
         'iata_type',
         'airplane_id',
         'airline_iata_code',

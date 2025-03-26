@@ -13,7 +13,10 @@ RUN apk --update --no-cache add \
         libexif \
         libxml2-dev \
         libexif-dev \
-        icu-dev && \
+        icu-dev \
+        autoconf \
+        g++ \
+        make && \
     docker-php-ext-install pdo_mysql && \
     docker-php-ext-install bcmath && \
     docker-php-ext-install gd && \
@@ -23,6 +26,8 @@ RUN apk --update --no-cache add \
     docker-php-ext-install soap && \
     docker-php-ext-install pdo pdo_pgsql && \
     docker-php-ext-install intl && \
+    pecl install mongodb && \
+    docker-php-ext-enable mongodb && \
     rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
 
 COPY ./_docker/app/php.ini /usr/local/etc/php/conf.d/php.ini
