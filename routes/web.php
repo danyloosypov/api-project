@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
+use App\Jobs\TestRedisQueue;
 
 Route::get('/clear_cache', function () {
     // Clear application cache
@@ -29,6 +30,11 @@ Route::get('/info', function () {
 
 Route::get('/test', function () {
     dd(\App\Facades\AviationstackFacade::fetchAircraftTypesData(['offset' => 100]));
+});
+
+Route::get('/test-redis', function () {
+    TestRedisQueue::dispatch();
+    return 'Job dispatched!';
 });
 
 Route::get('/test_mongo', function () {

@@ -28,6 +28,8 @@ RUN apk --update --no-cache add \
     docker-php-ext-install intl && \
     pecl install mongodb && \
     docker-php-ext-enable mongodb && \
+    pecl install redis && \
+    docker-php-ext-enable redis && \
     rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
 
 COPY ./_docker/app/php.ini /usr/local/etc/php/conf.d/php.ini

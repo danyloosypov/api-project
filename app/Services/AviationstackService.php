@@ -3,9 +3,13 @@
 namespace App\Services;
 
 use Exception;
+use Illuminate\Support\Facades\Log;
 
 class AviationstackService
 {
+    public const TYPE_ARRIVAL = 'arrival';
+    public const TYPE_DEPARTURE = 'departure';
+
     protected $apiUrl = 'https://api.aviationstack.com/v1';
     private $key = '';
 
@@ -35,8 +39,14 @@ class AviationstackService
             // Decode the JSON response
             $apiResult = json_decode($response, true);
 
+            if (isset($apiResult['data']['error'])) {
+                Log::error('Aviationstack API error', [$apiResult]);
+                return [];
+            }
+
             // Check if the API response contains an error
             if (isset($apiResult['error'])) {
+                Log::error('Aviationstack API error', [$apiResult]);
                 throw new Exception($apiResult['error']['message']);
             }
 
@@ -44,7 +54,6 @@ class AviationstackService
         } catch (Exception $e) {
             // Handle and log the error if needed
             Log::error('Error fetching: ' . $endpoint);
-            Log::error('Aviationstack API error: ' . $e->getMessage());
 
             // Return an empty array on failure
             return [];

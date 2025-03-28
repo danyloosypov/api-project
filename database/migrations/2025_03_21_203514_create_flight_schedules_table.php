@@ -15,17 +15,17 @@ return new class extends Migration
             $table->id();
             // Airline information
             $table->string('airline_name')->nullable();
-            $table->string('airline_iata_code', 3)->nullable();
-            $table->string('airline_icao_code', 3)->nullable();
+            $table->string('airline_iata_code')->nullable();
+            $table->string('airline_icao_code')->nullable();
 
             // Flight information
             $table->string('flight_number')->nullable();
-            $table->string('flight_iata_number', 6)->nullable();
-            $table->string('flight_icao_number', 6)->nullable();
+            $table->string('flight_iata_number')->nullable();
+            $table->string('flight_icao_number')->nullable();
 
             // Departure information
-            $table->string('departure_iata_code', 3)->nullable();
-            $table->string('departure_icao_code', 4)->nullable();
+            $table->string('departure_iata_code')->nullable();
+            $table->string('departure_icao_code')->nullable();
             $table->timestamp('departure_scheduled_time')->nullable();
             $table->timestamp('departure_estimated_time')->nullable();
             $table->timestamp('departure_actual_time')->nullable();
@@ -36,8 +36,8 @@ return new class extends Migration
             $table->string('departure_estimated_runway')->nullable();
 
             // Arrival information
-            $table->string('arrival_iata_code', 3)->nullable();
-            $table->string('arrival_icao_code', 4)->nullable();
+            $table->string('arrival_iata_code')->nullable();
+            $table->string('arrival_icao_code')->nullable();
             $table->timestamp('arrival_scheduled_time')->nullable();
             $table->timestamp('arrival_estimated_time')->nullable();
             $table->timestamp('arrival_actual_time')->nullable();

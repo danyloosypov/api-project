@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\Aviationstack;
 
+use App\Jobs\FetchFlightsJob;
 use Illuminate\Console\Command;
 use App\Facades\AviationstackFacade;
 use App\Models\Mongo\Flight as MongoFlight;
@@ -31,6 +32,8 @@ class FetchFlights extends Command
         $offset = 0;
         $limit = 100;
         $total = 0;
+        $requestCount = 0; // Track the number of requests made
+        $fetchedIds = [];
 
         do {
             // Fetch data from the API
@@ -38,62 +41,13 @@ class FetchFlights extends Command
 
             // Check if data is not empty
             if (!empty($data['data'])) {
-                foreach ($data['data'] as $flightData) {
-                    // MongoDB: Create or update the flight in MongoDB
-                    MongoFlight::updateOrCreate(
-                        [
-                            'flight.flight_iata' => $flightData['flight']['iata'],
-                            'flight_date' => $flightData['flight_date']
-                        ],
-                        $flightData
-                    );
-
-                    // MySQL: Prepare the MySQL data mapping
-                    $mysqlFlightData = [
-                        'flight_date' => $flightData['flight_date'],
-                        'flight_status' => $flightData['flight_status'],
-                        'departure_airport' => $flightData['departure']['airport'],
-                        'departure_iata' => $flightData['departure']['iata'],
-                        'departure_icao' => $flightData['departure']['icao'],
-                        'departure_terminal' => $flightData['departure']['terminal'],
-                        'departure_gate' => $flightData['departure']['gate'],
-                        'departure_delay' => $flightData['departure']['delay'],
-                        'departure_scheduled' => $flightData['departure']['scheduled'],
-                        'departure_estimated' => $flightData['departure']['estimated'],
-                        'departure_actual' => $flightData['departure']['actual'],
-                        'departure_estimated_runway' => $flightData['departure']['estimated_runway'],
-                        'departure_actual_runway' => $flightData['departure']['actual_runway'],
-                        'arrival_airport' => $flightData['arrival']['airport'],
-                        'arrival_iata' => $flightData['arrival']['iata'],
-                        'arrival_icao' => $flightData['arrival']['icao'],
-                        'arrival_terminal' => $flightData['arrival']['terminal'],
-                        'arrival_gate' => $flightData['arrival']['gate'],
-                        'arrival_baggage' => $flightData['arrival']['baggage'],
-                        'arrival_delay' => $flightData['arrival']['delay'],
-                        'arrival_scheduled' => $flightData['arrival']['scheduled'],
-                        'arrival_estimated' => $flightData['arrival']['estimated'],
-                        'arrival_actual' => $flightData['arrival']['actual'],
-                        'arrival_estimated_runway' => $flightData['arrival']['estimated_runway'],
-                        'arrival_actual_runway' => $flightData['arrival']['actual_runway'],
-                        'airline_name' => $flightData['airline']['name'],
-                        'airline_iata' => $flightData['airline']['iata'],
-                        'airline_icao' => $flightData['airline']['icao'],
-                        'flight_number' => $flightData['flight']['number'],
-                        'flight_iata' => $flightData['flight']['iata'],
-                        'flight_icao' => $flightData['flight']['icao'],
-                        'flight_codeshared' => $flightData['flight']['codeshared'],
-                        'aircraft' => $flightData['aircraft'],
-                        'live' => $flightData['live'],
-                    ];
-
-                    // MySQL: Create or update the flight in MySQL
-                    MySqlFlight::updateOrCreate(
-                        [
-                            'flight_iata' => $flightData['flight']['iata'],
-                            'flight_date' => $flightData['flight_date']
-                        ],
-                        $mysqlFlightData
-                    );
+                foreach ($data['data'] as $item) {
+                    $fetchedIds[] = array($item['flight']['iata'], $item['flight_date']);
+                }
+                // Process data in chunks of 100 elements
+                foreach (array_chunk($data['data'], 100) as $chunk) {
+                    // Dispatch the job to process each chunk
+                    FetchFlightsJob::dispatch($chunk);
                 }
 
                 // Update the offset for the next API call
@@ -102,12 +56,48 @@ class FetchFlights extends Command
 
                 // Output progress information
                 $this->info("Fetched {$offset} of {$total} records...");
+
+                $requestCount++;
             } else {
                 // No more data to fetch
                 break;
             }
+
+            if (app()->environment('local') && $requestCount >= 2) {
+                $this->info('Stopping after 2 requests in local environment.');
+                break;
+            }
         } while ($offset < $total);
+
+        if (!empty($fetchedIds)) {
+            $this->deleteStaleRecords($fetchedIds);
+        }
 
         $this->info('Flights data fetch completed successfully.');
     }
+
+    /**
+     * Delete records in MongoDB and MySQL where flight_iata and flight_date are not in the fetched data.
+     *
+     * @param array $fetchedIds
+     */
+    protected function deleteStaleRecords(array $fetchedIds)
+    {
+        $flightsToKeep = collect($fetchedIds)->map(function ($item) {
+            return ['flight_iata' => $item[0], 'flight_date' => $item[1]];
+        });
+
+        // MongoDB: Delete records where flight_iata and flight_date are NOT in the fetched results
+        $mongoDeleted = MongoFlight::whereNotIn('flight.flight_iata', $flightsToKeep->pluck('flight_iata'))
+            ->orWhereNotIn('flight_date', $flightsToKeep->pluck('flight_date'))
+            ->delete();
+        $this->info("Deleted {$mongoDeleted} stale records from MongoDB.");
+
+        // MySQL: Delete records where flight_iata and flight_date are NOT in the fetched results
+        $mysqlDeleted = MySqlFlight::whereNotIn('flight_iata', $flightsToKeep->pluck('flight_iata'))
+            ->orWhereNotIn('flight_date', $flightsToKeep->pluck('flight_date'))
+            ->delete();
+        $this->info("Deleted {$mysqlDeleted} stale records from MySQL.");
+    }
+
 }

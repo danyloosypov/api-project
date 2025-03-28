@@ -4,6 +4,7 @@ namespace App\Console\Commands\Aviationstack;
 
 use Illuminate\Console\Command;
 use App\Facades\AviationstackFacade;
+use App\Jobs\FetchAircraftTypeJob;
 use App\Models\Mongo\AircraftType as MongoAircraftType;
 use App\Models\MySql\AircraftType as MySqlAircraftType;
 
@@ -31,6 +32,8 @@ class FetchAircraftType extends Command
         $offset = 0;
         $limit = 100;
         $total = 0;
+        $requestCount = 0;
+        $fetchedPlaneTypeIds = [];
 
         do {
             // Fetch data from the API
@@ -39,15 +42,13 @@ class FetchAircraftType extends Command
             // Check if data is not empty
             if (!empty($data['data'])) {
                 foreach ($data['data'] as $aircraftType) {
-                    MongoAircraftType::updateOrCreate(
-                        ['plane_type_id' => $aircraftType['plane_type_id']],
-                        $aircraftType
-                    );
+                    $fetchedPlaneTypeIds[] = $aircraftType['plane_type_id'];
+                }
 
-                    MySqlAircraftType::updateOrCreate(
-                        ['plane_type_id' => $aircraftType['plane_type_id']],
-                        $aircraftType
-                    );
+                // Process data in chunks of 100 elements
+                foreach (array_chunk($data['data'], 100) as $chunk) {
+                    // Dispatch the job to process each chunk
+                    FetchAircraftTypeJob::dispatch($chunk);
                 }
 
                 // Update the offset for the next API call
@@ -55,13 +56,40 @@ class FetchAircraftType extends Command
                 $total = $data['pagination']['total'];
 
                 // Output progress information
-                $this->info("Fetched {$offset} of {$total} records...");
+                $this->info("Dispatched jobs for {$offset} of {$total} records...");
+
+                $requestCount++;
             } else {
                 // No more data to fetch
                 break;
             }
+
+            if (app()->environment('local') && $requestCount >= 2) {
+                $this->info('Stopping after 2 requests in local environment.');
+                break;
+            }
         } while ($offset < $total);
 
-        $this->info('Aircraft types data fetch completed successfully.');
+        if (!empty($fetchedPlaneTypeIds)) {
+            $this->deleteStaleRecords($fetchedPlaneTypeIds);
+        }
+
+        $this->info('Aircraft types data fetch and dispatch completed successfully.');
+    }
+
+    /**
+     * Delete records in Mongo and MySQL where plane_type_id is not in the fetched data.
+     *
+     * @param array $fetchedPlaneTypeIds
+     */
+    protected function deleteStaleRecords(array $fetchedPlaneTypeIds)
+    {
+        // Delete records in MongoDB where plane_type_id is not in the fetched data
+        $mongoDeleted = MongoAircraftType::whereNotIn('plane_type_id', $fetchedPlaneTypeIds)->delete();
+        $this->info("Deleted {$mongoDeleted} stale records from MongoDB.");
+
+        // Delete records in MySQL where plane_type_id is not in the fetched data
+        $mysqlDeleted = MySqlAircraftType::whereNotIn('plane_type_id', $fetchedPlaneTypeIds)->delete();
+        $this->info("Deleted {$mysqlDeleted} stale records from MySQL.");
     }
 }

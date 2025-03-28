@@ -68,6 +68,20 @@ services:
             PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
             PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
         container_name: ${PROJECT_NAME}_pgadmin
+    redis:
+        image: redis:latest
+        restart: always
+        ports:
+            - "6379:6379"
+        container_name: ${PROJECT_NAME}_redis
+    redis-commander:
+        image: rediscommander/redis-commander:latest
+        restart: always
+        environment:
+            - REDIS_HOSTS=local:redis:6379
+        ports:
+            - "8081:8081"
+        container_name: ${PROJECT_NAME}_redis_commander
 
 networks:
     default:

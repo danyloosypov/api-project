@@ -6,6 +6,9 @@ use Illuminate\Console\Command;
 use App\Facades\AviationstackFacade;
 use App\Models\Mongo\FlightFutureSchedule as MongoFlightFutureSchedule;
 use App\Models\MySql\FlightFutureSchedule as MySqlFlightFutureSchedule;
+use App\Jobs\FetchFlightFutureScheduleJob;
+use Illuminate\Support\Facades\Log;
+use App\Services\AviationstackService;
 
 class FetchFlightFutureSchedule extends Command
 {
@@ -31,59 +34,71 @@ class FetchFlightFutureSchedule extends Command
         $offset = 0;
         $limit = 100;
         $total = 0;
+        $requestCount = 0; // Track the number of requests made
+        $iataCode = 'AHZ';
+        $date = '2025-04-04';
 
-        do {
-            // Fetch data from the API
-            $data = AviationstackFacade::fetchFlightFutureSchedulesData(['offset' => $offset, 'limit' => $limit]);
+        // Define the flight types (arrival and departure)
+        $flightTypes = [
+            AviationstackService::TYPE_ARRIVAL,
+            AviationstackService::TYPE_DEPARTURE
+        ];
 
-            // Check if data is not empty
-            if (!empty($data['data'])) {
-                foreach ($data['data'] as $flight) {
-                    MongoFlightFutureSchedule::create(
-                        $flight
-                    );
+        foreach ($flightTypes as $flightType) {
+            $this->info("Fetching data for flight type: {$flightType}");
 
-                    MySqlFlightFutureSchedule::create([
-                        'weekday' => $flight['weekday'],
-                        'flight_number' => $flight['flight']['number'],
-                        'flight_iata_number' => $flight['flight']['iataNumber'],
-                        'flight_icao_number' => $flight['flight']['icaoNumber'],
-                        'airline_name' => $flight['airline']['name'],
-                        'airline_iata_code' => $flight['airline']['iataCode'],
-                        'airline_icao_code' => $flight['airline']['icaoCode'],
-                        'aircraft_model_code' => $flight['aircraft']['modelCode'],
-                        'aircraft_model_text' => $flight['aircraft']['modelText'],
-                        'departure_iata_code' => $flight['departure']['iataCode'],
-                        'departure_icao_code' => $flight['departure']['icaoCode'],
-                        'departure_terminal' => $flight['departure']['terminal'],
-                        'departure_gate' => $flight['departure']['gate'],
-                        'departure_scheduled_time' => $flight['departure']['scheduledTime'],
-                        'arrival_iata_code' => $flight['arrival']['iataCode'],
-                        'arrival_icao_code' => $flight['arrival']['icaoCode'],
-                        'arrival_terminal' => $flight['arrival']['terminal'],
-                        'arrival_gate' => $flight['arrival']['gate'],
-                        'arrival_scheduled_time' => $flight['arrival']['scheduledTime'],
-                        'codeshare_airline_name' => $flight['codeshared']['airline']['name'] ?? null,
-                        'codeshare_airline_iata_code' => $flight['codeshared']['airline']['iataCode'] ?? null,
-                        'codeshare_airline_icao_code' => $flight['codeshared']['airline']['icaoCode'] ?? null,
-                        'codeshare_flight_number' => $flight['codeshared']['flight']['number'] ?? null,
-                        'codeshare_flight_iata_number' => $flight['codeshared']['flight']['iataNumber'] ?? null,
-                        'codeshare_flight_icao_number' => $flight['codeshared']['flight']['icaoNumber'] ?? null,
-                    ]);
+            do {
+                // Fetch data from the API
+                $data = AviationstackFacade::fetchFlightFutureSchedulesData([
+                    'offset' => $offset,
+                    'limit' => $limit,
+                    'iataCode' => $iataCode,
+                    'type' => $flightType,
+                    'date' => $date,
+                ]);
+
+                // Check if data is not empty
+                if (!empty($data['data'])) {
+                    $this->deleteExistingRecords($flightType); // Pass the type for more granularity if needed
+
+                    foreach (array_chunk($data['data'], 100) as $chunk) {
+                        // Dispatch the job to process each chunk
+                        FetchFlightFutureScheduleJob::dispatch($chunk);
+                    }
+
+                    // Update the offset for the next API call
+                    $offset += $limit;
+                    $total = $data['pagination']['total'];
+
+                    $this->info("Dispatched jobs for {$offset} of {$total} records for {$flightType}...");
+
+                    // Increase the request count
+                    $requestCount++;
+                } else {
+                    // No more data to fetch
+                    break;
                 }
 
-                // Update the offset for the next API call
-                $offset += $limit;
-                $total = $data['pagination']['total'];
+                if (app()->environment('local') && $requestCount >= 2) {
+                    $this->info('Stopping after 2 requests in local environment.');
+                    break;
+                }
+            } while ($offset < $total);
 
-                // Output progress information
-                $this->info("Fetched {$offset} of {$total} records...");
-            } else {
-                // No more data to fetch
-                break;
-            }
-        } while ($offset < $total);
+            // Reset offset and total for the next flight type
+            $offset = 0;
+            $total = 0;
 
-        $this->info('Flights data fetch completed successfully.');
+            $this->info("Completed fetching data for flight type: {$flightType}");
+        }
+
+        $this->info('Flights data fetch completed successfully for all types.');
+    }
+
+    protected function deleteExistingRecords(): void
+    {
+        MongoFlightFutureSchedule::truncate();
+        MySqlFlightFutureSchedule::truncate();
+        $this->info('Deleted all existing records from MongoDB and MySQL.');
     }
 }

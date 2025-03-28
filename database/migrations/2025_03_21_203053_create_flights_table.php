@@ -18,11 +18,11 @@ return new class extends Migration
 
             // Departure information
             $table->string('departure_airport')->nullable();
-            $table->string('departure_iata', 3)->nullable();
-            $table->string('departure_icao', 4)->nullable();
+            $table->string('departure_iata')->nullable();
+            $table->string('departure_icao')->nullable();
             $table->string('departure_terminal')->nullable();
             $table->string('departure_gate')->nullable();
-            $table->time('departure_delay')->nullable();
+            $table->string('departure_delay')->nullable();
             $table->timestamp('departure_scheduled')->nullable();
             $table->timestamp('departure_estimated')->nullable();
             $table->timestamp('departure_actual')->nullable();
@@ -31,12 +31,12 @@ return new class extends Migration
 
             // Arrival information
             $table->string('arrival_airport')->nullable();
-            $table->string('arrival_iata', 3)->nullable();
-            $table->string('arrival_icao', 4)->nullable();
+            $table->string('arrival_iata')->nullable();
+            $table->string('arrival_icao')->nullable();
             $table->string('arrival_terminal')->nullable();
             $table->string('arrival_gate')->nullable();
             $table->string('arrival_baggage')->nullable();
-            $table->time('arrival_delay')->nullable();
+            $table->string('arrival_delay')->nullable();
             $table->timestamp('arrival_scheduled')->nullable();
             $table->timestamp('arrival_estimated')->nullable();
             $table->timestamp('arrival_actual')->nullable();
@@ -45,13 +45,13 @@ return new class extends Migration
 
             // Airline information
             $table->string('airline_name')->nullable();
-            $table->string('airline_iata', 3)->nullable();
-            $table->string('airline_icao', 4)->nullable();
+            $table->string('airline_iata')->nullable();
+            $table->string('airline_icao')->nullable();
 
             // Flight number and codeshare details
             $table->string('flight_number')->nullable();
-            $table->string('flight_iata', 6)->nullable();
-            $table->string('flight_icao', 6)->nullable();
+            $table->string('flight_iata')->nullable();
+            $table->string('flight_icao')->nullable();
             $table->string('flight_codeshared')->nullable(); // Nullable if not available
 
             // Aircraft and live status information (nullable if not available)
