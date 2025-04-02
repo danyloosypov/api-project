@@ -8,6 +8,7 @@ class Transfer extends Model
 {
     protected $fillable = [
         'driver_id',
+        'vehicle_id',
         'luggage',
         'people_qty',
         'flight_num',

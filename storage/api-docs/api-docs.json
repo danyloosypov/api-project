@@ -9,6 +9,523 @@
         "version": "1.0.0"
     },
     "paths": {
+        "/api/orders": {
+            "get": {
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Get all orders",
+                "description": "Display a listing of the orders.",
+                "operationId": "329b652e559ef498cf6599a9642b889b",
+                "responses": {
+                    "200": {
+                        "description": "A list of orders",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Order"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Create a new order",
+                "description": "Store a new order.",
+                "operationId": "505b195c00654c8a83a9f74c34e221be",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Order"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Order created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Order"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/api/orders/{id}": {
+            "get": {
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Get a specific order",
+                "description": "Show a specific order by id.",
+                "operationId": "b6735a2c34205b42126051d6505ada6e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Order ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Order details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Order"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Transfer not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Update an order",
+                "description": "Update an order by id.",
+                "operationId": "b134a8cf2d3c204ec52078f73508807b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Order ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Order"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Order updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Order"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Order not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Delete an order",
+                "description": "Remove an order by id.",
+                "operationId": "a23a9e05404c30afb13786d706d20562",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Order ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Order deleted"
+                    },
+                    "404": {
+                        "description": "Order not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/api/transfers": {
+            "get": {
+                "tags": [
+                    "Transfers"
+                ],
+                "summary": "Get a list of transfers",
+                "description": "Retrieve a list of transfers, with optional filtering by driver_id, status, flight_num, and sorting by id, status, pickup, and unload.",
+                "operationId": "911e2c0ca9835e3976caf9f8cc13d2d6",
+                "parameters": [
+                    {
+                        "name": "driver_id",
+                        "in": "query",
+                        "description": "Filter by driver ID",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filter by status",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "flight_num",
+                        "in": "query",
+                        "description": "Filter by flight number",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort_field",
+                        "in": "query",
+                        "description": "Field to sort by (e.g., id, status, pickup, unload)",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort_direction",
+                        "in": "query",
+                        "description": "Sort direction (asc or desc)",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of transfers retrieved successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Transfer"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Transfers"
+                ],
+                "summary": "Create a new transfer",
+                "description": "Create a new transfer record with the provided data.",
+                "operationId": "20bcde73df13e86e67ed2eaa878573d8",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Transfer"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Transfer created successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Transfer"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/api/transfers/{id}": {
+            "get": {
+                "tags": [
+                    "Transfers"
+                ],
+                "summary": "Get a specific transfer",
+                "description": "Retrieve a specific transfer by its ID.",
+                "operationId": "f20e3907ba605db596ed1d8f476ad520",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Transfer ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Transfer retrieved successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Transfer"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Transfer not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Transfers"
+                ],
+                "summary": "Update a specific transfer",
+                "description": "Update the specified transfer by its ID.",
+                "operationId": "2aea242c6c739e54a9b974773a4b1875",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Transfer ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Transfer"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Transfer updated successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Transfer not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Transfers"
+                ],
+                "summary": "Delete a specific transfer",
+                "description": "Delete the specified transfer by its ID.",
+                "operationId": "8da7e65fda5634583caa146863c5da1e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Transfer ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Transfer deleted successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Transfer not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
         "/test": {
             "get": {
                 "tags": [
@@ -27,7 +544,165 @@
             }
         }
     },
+    "components": {
+        "schemas": {
+            "Order": {
+                "title": "Order",
+                "description": "Order model",
+                "required": [
+                    "people_qty",
+                    "order_date",
+                    "flight_num",
+                    "status",
+                    "phone",
+                    "email",
+                    "total",
+                    "arrival_date"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "ID of the order",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "people_qty": {
+                        "description": "Number of people in the order",
+                        "type": "integer",
+                        "example": 3
+                    },
+                    "order_date": {
+                        "description": "Order date and time",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-10-10T10:30:00Z"
+                    },
+                    "flight_num": {
+                        "description": "Flight number associated with the order",
+                        "type": "string",
+                        "example": "AB1234"
+                    },
+                    "status": {
+                        "description": "Order status",
+                        "type": "string",
+                        "example": "completed"
+                    },
+                    "phone": {
+                        "description": "Phone number of the person who placed the order",
+                        "type": "string",
+                        "example": "+1234567890"
+                    },
+                    "email": {
+                        "description": "Email address of the person who placed the order",
+                        "type": "string",
+                        "format": "email",
+                        "example": "email@example.com"
+                    },
+                    "luggage_qty": {
+                        "description": "Quantity of luggage for the order",
+                        "type": "integer",
+                        "example": 2
+                    },
+                    "total": {
+                        "description": "Total price of the order",
+                        "type": "number",
+                        "format": "float",
+                        "example": 120.5
+                    },
+                    "arrival_date": {
+                        "description": "Arrival date and time",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-10-11T12:00:00Z"
+                    },
+                    "comment": {
+                        "description": "Additional comments for the order",
+                        "type": "string",
+                        "example": "Please arrange for a VIP transfer."
+                    }
+                },
+                "type": "object"
+            },
+            "Transfer": {
+                "title": "Transfer",
+                "description": "Transfer model",
+                "required": [
+                    "driver_id",
+                    "people_qty",
+                    "status",
+                    "pickup",
+                    "unload",
+                    "destination"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "ID of the transfer",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "driver_id": {
+                        "description": "ID of the driver associated with the transfer",
+                        "type": "integer",
+                        "example": 123
+                    },
+                    "luggage": {
+                        "description": "Details about the luggage",
+                        "type": "string",
+                        "example": "2 suitcases"
+                    },
+                    "people_qty": {
+                        "description": "Number of people in the transfer",
+                        "type": "integer",
+                        "example": 3
+                    },
+                    "flight_num": {
+                        "description": "Flight number for the transfer",
+                        "type": "string",
+                        "example": "AB1234"
+                    },
+                    "pickup": {
+                        "description": "Pickup location",
+                        "type": "string",
+                        "example": "Airport Terminal 1"
+                    },
+                    "unload": {
+                        "description": "Unload location",
+                        "type": "string",
+                        "example": "Hotel XYZ"
+                    },
+                    "gate": {
+                        "description": "Gate number at the pickup location",
+                        "type": "string",
+                        "example": "Gate A"
+                    },
+                    "destination": {
+                        "description": "Transfer destination",
+                        "type": "string",
+                        "example": "City Center"
+                    },
+                    "status": {
+                        "description": "Current status of the transfer",
+                        "type": "string",
+                        "example": "completed"
+                    },
+                    "comment": {
+                        "description": "Additional comments for the transfer",
+                        "type": "string",
+                        "example": "VIP transfer"
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
     "tags": [
+        {
+            "name": "Orders",
+            "description": "Orders"
+        },
+        {
+            "name": "Transfers",
+            "description": "Transfers"
+        },
         {
             "name": "Test",
             "description": "Test"
