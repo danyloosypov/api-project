@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\TransfersController;
 use App\Http\Controllers\Api\OrdersController;
+use App\Http\Controllers\Api\FlightsController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -24,5 +25,16 @@ Route::prefix('orders')->group(function () {
     Route::put('/{id}', [OrdersController::class, 'update']);
     Route::delete('/{id}', [OrdersController::class, 'destroy']);
 });
+
+Route::get('/flights', [FlightsController::class, 'getFlights']);
+Route::get('/flight-routes', [FlightsController::class, 'getFlightRoutes']);
+Route::get('/airports', [FlightsController::class, 'getAirports']);
+Route::get('/airlines', [FlightsController::class, 'getAirlines']);
+Route::get('/airplanes', [FlightsController::class, 'getAirplanes']);
+Route::get('/aircraft-types', [FlightsController::class, 'getAircraftTypes']);
+Route::get('/cities', [FlightsController::class, 'getCities']);
+Route::get('/countries', [FlightsController::class, 'getCountries']);
+Route::get('/flight-schedules', [FlightsController::class, 'getFlightSchedules']);
+Route::get('/flight-future-schedules', [FlightsController::class, 'getFlightFutureSchedules']);
 
 Route::get('/test', [\App\Http\Controllers\TestController::class, 'test']);
