@@ -1782,6 +1782,857 @@
                 }
             }
         },
+        "/api/mongo/flights": {
+            "get": {
+                "tags": [
+                    "Flights"
+                ],
+                "summary": "Get a list of flights",
+                "description": "Retrieve flights with optional filters, sorting, and pagination.",
+                "operationId": "83e1927e1bf9ee1340a0480092cdadc3",
+                "parameters": [
+                    {
+                        "name": "flight_status",
+                        "in": "query",
+                        "description": "Filter by flight status (scheduled, active, landed, cancelled, incident, diverted)",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "flight_date",
+                        "in": "query",
+                        "description": "Filter by flight date (format: YYYY-MM-DD)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "dep_iata",
+                        "in": "query",
+                        "description": "Filter by departure airport IATA code",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "arr_iata",
+                        "in": "query",
+                        "description": "Filter by arrival airport IATA code",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "dep_icao",
+                        "in": "query",
+                        "description": "Filter by departure airport ICAO code",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "arr_icao",
+                        "in": "query",
+                        "description": "Filter by arrival airport ICAO code",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "airline_name",
+                        "in": "query",
+                        "description": "Filter by airline name",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "airline_iata",
+                        "in": "query",
+                        "description": "Filter by airline IATA code",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "airline_icao",
+                        "in": "query",
+                        "description": "Filter by airline ICAO code",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "flight_number",
+                        "in": "query",
+                        "description": "Filter by flight number",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "flight_iata",
+                        "in": "query",
+                        "description": "Filter by flight IATA code",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "flight_icao",
+                        "in": "query",
+                        "description": "Filter by flight ICAO code",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "min_delay_dep",
+                        "in": "query",
+                        "description": "Filter by minimum departure delay (minutes)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "min_delay_arr",
+                        "in": "query",
+                        "description": "Filter by minimum arrival delay (minutes)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "max_delay_dep",
+                        "in": "query",
+                        "description": "Filter by maximum departure delay (minutes)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "max_delay_arr",
+                        "in": "query",
+                        "description": "Filter by maximum arrival delay (minutes)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "arr_scheduled_time_arr",
+                        "in": "query",
+                        "description": "Filter by scheduled arrival date (YYYY-MM-DD)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "arr_scheduled_time_dep",
+                        "in": "query",
+                        "description": "Filter by scheduled departure date (YYYY-MM-DD)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Field to sort the results by",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "flight_date"
+                        }
+                    },
+                    {
+                        "name": "direction",
+                        "in": "query",
+                        "description": "Sort direction (asc or desc)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "asc"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "flight_date": {
+                                                        "type": "string",
+                                                        "format": "date"
+                                                    },
+                                                    "flight_status": {
+                                                        "type": "string"
+                                                    },
+                                                    "departure_airport": {
+                                                        "type": "string"
+                                                    },
+                                                    "departure_iata": {
+                                                        "type": "string"
+                                                    },
+                                                    "departure_icao": {
+                                                        "type": "string"
+                                                    },
+                                                    "departure_terminal": {
+                                                        "type": "string"
+                                                    },
+                                                    "departure_gate": {
+                                                        "type": "string"
+                                                    },
+                                                    "departure_delay": {
+                                                        "type": "integer"
+                                                    },
+                                                    "departure_scheduled": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    },
+                                                    "departure_estimated": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    },
+                                                    "departure_actual": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    },
+                                                    "arrival_airport": {
+                                                        "type": "string"
+                                                    },
+                                                    "arrival_iata": {
+                                                        "type": "string"
+                                                    },
+                                                    "arrival_icao": {
+                                                        "type": "string"
+                                                    },
+                                                    "arrival_terminal": {
+                                                        "type": "string"
+                                                    },
+                                                    "arrival_gate": {
+                                                        "type": "string"
+                                                    },
+                                                    "arrival_baggage": {
+                                                        "type": "string"
+                                                    },
+                                                    "arrival_delay": {
+                                                        "type": "integer"
+                                                    },
+                                                    "arrival_scheduled": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    },
+                                                    "arrival_estimated": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    },
+                                                    "arrival_actual": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    },
+                                                    "airline_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "airline_iata": {
+                                                        "type": "string"
+                                                    },
+                                                    "airline_icao": {
+                                                        "type": "string"
+                                                    },
+                                                    "flight_number": {
+                                                        "type": "string"
+                                                    },
+                                                    "flight_iata": {
+                                                        "type": "string"
+                                                    },
+                                                    "flight_icao": {
+                                                        "type": "string"
+                                                    },
+                                                    "flight_codeshared": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "aircraft": {
+                                                        "type": "string"
+                                                    },
+                                                    "live": {
+                                                        "type": "boolean"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/mongo/flight-routes": {
+            "get": {
+                "tags": [
+                    "Flight Routes"
+                ],
+                "summary": "Get flight routes",
+                "description": "Retrieve flight routes based on various filters such as flight number, departure/arrival airport codes, and airline codes.",
+                "operationId": "4aa4ef9e0aeeb0246075cb23f1f408e7",
+                "parameters": [
+                    {
+                        "name": "flight_number",
+                        "in": "query",
+                        "description": "Filter by flight number. Example: 2557",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "dep_iata",
+                        "in": "query",
+                        "description": "Filter by departure airport IATA code.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "arr_iata",
+                        "in": "query",
+                        "description": "Filter by arrival airport IATA code.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "dep_icao",
+                        "in": "query",
+                        "description": "Filter by departure airport ICAO code.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "arr_icao",
+                        "in": "query",
+                        "description": "Filter by arrival airport ICAO code.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "airline_iata",
+                        "in": "query",
+                        "description": "Filter by airline IATA code.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "airline_icao",
+                        "in": "query",
+                        "description": "Filter by airline ICAO code.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            }
+        },
+        "/api/mongo/airports": {
+            "get": {
+                "tags": [
+                    "Airports"
+                ],
+                "summary": "Get a list of airports",
+                "description": "Retrieve a list of airports with optional search functionality.",
+                "operationId": "ed1bfb095d64c2d811f21a5e79759a43",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search term to get autocomplete suggestions for airports",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of airports"
+                    }
+                }
+            }
+        },
+        "/api/mongo/airlines": {
+            "get": {
+                "tags": [
+                    "Airlines"
+                ],
+                "summary": "Get a list of airlines",
+                "description": "Retrieve a list of airlines with optional search functionality.",
+                "operationId": "1ae14ab59cda3fb691030ab4020468e9",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search term to get autocomplete suggestions for airlines",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of airlines"
+                    }
+                }
+            }
+        },
+        "/api/mongo/airplanes": {
+            "get": {
+                "tags": [
+                    "Airplanes"
+                ],
+                "summary": "Get a list of airplanes",
+                "description": "Retrieve a list of airplanes with optional search functionality.",
+                "operationId": "4c2b494e085def1a15e32e8356bde961",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search term to get autocomplete suggestions for airplanes",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of airplanes"
+                    }
+                }
+            }
+        },
+        "/api/mongo/aircraft-types": {
+            "get": {
+                "tags": [
+                    "Aircraft Types"
+                ],
+                "summary": "Get a list of aircraft types",
+                "description": "Retrieve a list of aircraft types with optional search functionality.",
+                "operationId": "90eace59d8aa37c43013e3f055c7b98c",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search term to get autocomplete suggestions for aircraft types",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of aircraft types"
+                    }
+                }
+            }
+        },
+        "/api/mongo/cities": {
+            "get": {
+                "tags": [
+                    "Cities"
+                ],
+                "summary": "Get a list of cities",
+                "description": "Retrieve a paginated list of cities. Supports search for autocomplete suggestions.",
+                "operationId": "f3ecf10f7f59f788caccb1b48ab3844c",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search for a city by name or IATA code",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            }
+        },
+        "/api/mongo/countries": {
+            "get": {
+                "tags": [
+                    "Countries"
+                ],
+                "summary": "Get a list of countries",
+                "description": "Retrieve a paginated list of countries. Supports search for autocomplete suggestions.",
+                "operationId": "86b730424dd63502903fb1565a93ef4a",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search for a country by name, ISO2, or ISO3 code",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            }
+        },
+        "/api/mongo/flight-schedules": {
+            "get": {
+                "tags": [
+                    "Flight Schedules"
+                ],
+                "summary": "Get flight schedules",
+                "description": "Retrieve flight schedules with optional filtering and pagination.",
+                "operationId": "1c5d6ed53205b46818df848d1f475e9c",
+                "parameters": [
+                    {
+                        "name": "iataCode",
+                        "in": "query",
+                        "description": "The IATA code of the airport (e.g., JFK, DXB).",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "Schedule type: departure or arrival.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "departure",
+                                "arrival"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Flight status (e.g., landed, scheduled, cancelled, active, etc.).",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "dep_terminal",
+                        "in": "query",
+                        "description": "Departure terminal number (e.g., 1, 2, 3, etc.).",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "dep_delay",
+                        "in": "query",
+                        "description": "Departure delay in minutes (e.g., 10, 20, etc.).",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "dep_schTime",
+                        "in": "query",
+                        "description": "Scheduled departure time (Format: YYYY-MM-DDTHH:MM:SS.000).",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date-time"
+                        }
+                    },
+                    {
+                        "name": "dep_estTime",
+                        "in": "query",
+                        "description": "Estimated departure time (Format: YYYY-MM-DDTHH:MM:SS.000).",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date-time"
+                        }
+                    },
+                    {
+                        "name": "dep_actTime",
+                        "in": "query",
+                        "description": "Actual departure time (Format: YYYY-MM-DDTHH:MM:SS.000).",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date-time"
+                        }
+                    },
+                    {
+                        "name": "arr_terminal",
+                        "in": "query",
+                        "description": "Arrival terminal number (e.g., 1, 2, 3, etc.).",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "arr_delay",
+                        "in": "query",
+                        "description": "Arrival delay in minutes (e.g., 10, 20, etc.).",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "arr_schTime",
+                        "in": "query",
+                        "description": "Scheduled arrival time (Format: YYYY-MM-DDTHH:MM:SS.000).",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date-time"
+                        }
+                    },
+                    {
+                        "name": "arr_estTime",
+                        "in": "query",
+                        "description": "Estimated arrival time (Format: YYYY-MM-DDTHH:MM:SS.000).",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date-time"
+                        }
+                    },
+                    {
+                        "name": "arr_actTime",
+                        "in": "query",
+                        "description": "Actual arrival time (Format: YYYY-MM-DDTHH:MM:SS.000).",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date-time"
+                        }
+                    },
+                    {
+                        "name": "airline_name",
+                        "in": "query",
+                        "description": "Airline name (e.g., Air France, Delta Air Lines).",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "airline_iata",
+                        "in": "query",
+                        "description": "Airline IATA code (e.g., GB).",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "airline_icao",
+                        "in": "query",
+                        "description": "Airline ICAO code (e.g., EIN).",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "flight_num",
+                        "in": "query",
+                        "description": "Flight number (1 to 4 digits).",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "flight_iata",
+                        "in": "query",
+                        "description": "Flight IATA number (e.g., AA171).",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "flight_icao",
+                        "in": "query",
+                        "description": "Flight ICAO number (e.g., EIN171).",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "lang",
+                        "in": "query",
+                        "description": "Language for translations (e.g., en, fr, de, etc.).",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            }
+        },
+        "/api/mongo/flight-future-schedules": {
+            "get": {
+                "tags": [
+                    "FlightSchedules"
+                ],
+                "summary": "Retrieve future flight schedules based on various filters",
+                "description": "Fetch flight schedules based on airport IATA code, schedule type, date, and optional airline IATA/ICAO codes or flight number.",
+                "operationId": "c321ab527246174463b2d73c470feb04",
+                "parameters": [
+                    {
+                        "name": "iataCode",
+                        "in": "query",
+                        "description": "The IATA code of the airport.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "JFK"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "The schedule type: 'departure' or 'arrival'.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "departure",
+                                "arrival"
+                            ],
+                            "example": "departure"
+                        }
+                    },
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "description": "The flight date in YYYY-MM-DD format.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2025-06-15"
+                        }
+                    },
+                    {
+                        "name": "airline_iata",
+                        "in": "query",
+                        "description": "Filter by airline IATA code.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "AA"
+                        }
+                    },
+                    {
+                        "name": "airline_icao",
+                        "in": "query",
+                        "description": "Filter by airline ICAO code.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "AAL"
+                        }
+                    },
+                    {
+                        "name": "flight_number",
+                        "in": "query",
+                        "description": "Filter by flight number.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "100"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of results per page.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 20
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A paginated list of future flight schedules."
+                    }
+                }
+            }
+        },
         "/test": {
             "get": {
                 "tags": [

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\TransfersController;
 use App\Http\Controllers\Api\OrdersController;
 use App\Http\Controllers\Api\FlightsController;
+use App\Http\Controllers\Api\Mongo\FlightsController as FlightsControllerMongo;
 use App\Http\Controllers\AuthController;
 
 Route::get('/user', function (Request $request) {
@@ -41,5 +42,18 @@ Route::get('/cities', [FlightsController::class, 'getCities']);
 Route::get('/countries', [FlightsController::class, 'getCountries']);
 Route::get('/flight-schedules', [FlightsController::class, 'getFlightSchedules']);
 Route::get('/flight-future-schedules', [FlightsController::class, 'getFlightFutureSchedules']);
+
+Route::prefix('mongo')->group(function () {
+    Route::get('/flights', [FlightsControllerMongo::class, 'getFlights']);
+    Route::get('/flight-routes', [FlightsControllerMongo::class, 'getFlightRoutes']);
+    Route::get('/airports', [FlightsControllerMongo::class, 'getAirports']);
+    Route::get('/airlines', [FlightsControllerMongo::class, 'getAirlines']);
+    Route::get('/airplanes', [FlightsControllerMongo::class, 'getAirplanes']);
+    Route::get('/aircraft-types', [FlightsControllerMongo::class, 'getAircraftTypes']);
+    Route::get('/cities', [FlightsControllerMongo::class, 'getCities']);
+    Route::get('/countries', [FlightsControllerMongo::class, 'getCountries']);
+    Route::get('/flight-schedules', [FlightsControllerMongo::class, 'getFlightSchedules']);
+    Route::get('/flight-future-schedules', [FlightsControllerMongo::class, 'getFlightFutureSchedules']);
+});
 
 Route::get('/test', [\App\Http\Controllers\TestController::class, 'test']);
