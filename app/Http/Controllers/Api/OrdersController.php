@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\OrderResource;
+use App\Models\MySql\Order;
 use App\Services\OrderService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Gate;
 
 class OrdersController extends Controller
 {
@@ -89,6 +91,8 @@ class OrdersController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
+        Gate::authorize('viewAny', Order::class);
+
         // Extract filter parameters from the request
         $filters = [
             'phone' => $request->get('phone', ''),
@@ -140,6 +144,8 @@ class OrdersController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
+        Gate::authorize('create', Order::class);
+
         $validatedData = $request->validate([
             'people_qty' => 'required|integer',
             'order_date' => 'required|string',
@@ -193,6 +199,8 @@ class OrdersController extends Controller
      */
     public function show($id): JsonResponse
     {
+        Gate::authorize('view', Order::class);
+
         $order = $this->orderService->findOrder($id);
 
         if (!$order) {
@@ -240,6 +248,8 @@ class OrdersController extends Controller
      */
     public function update(Request $request, $id): JsonResponse
     {
+        Gate::authorize('update', Order::class);
+
         $validatedData = $request->validate([
             'people_qty' => 'required|integer',
             'order_date' => 'required|string',
@@ -297,6 +307,8 @@ class OrdersController extends Controller
      */
     public function destroy($id): JsonResponse
     {
+        Gate::authorize('delete', Order::class);
+
         $deleted = $this->orderService->deleteOrder($id);
 
         if ($deleted) {

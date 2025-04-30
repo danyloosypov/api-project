@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\TransferResource;
+use App\Models\MySql\Transfer;
 use App\Services\TransferService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Gate;
 
 class TransfersController extends Controller
 {
@@ -71,6 +73,8 @@ class TransfersController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
+        Gate::authorize('viewAny', Transfer::class);
+
         $filters = $request->only(['driver_id', 'status', 'flight_num']);
         $sortField = $request->get('sort_field', 'id');
         $sortDirection = $request->get('sort_direction', 'asc');
@@ -107,6 +111,8 @@ class TransfersController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
+        Gate::authorize('create', Transfer::class);
+
         $validatedData = $request->validate([
             'driver_id' => 'required|integer',
             'luggage' => 'nullable|string',
@@ -159,6 +165,8 @@ class TransfersController extends Controller
      */
     public function show($id): JsonResponse
     {
+        Gate::authorize('view', Transfer::class);
+
         $transfer = $this->transferService->findTransfer($id);
 
         if (!$transfer) {
@@ -207,6 +215,8 @@ class TransfersController extends Controller
      */
     public function update(Request $request, $id): JsonResponse
     {
+        Gate::authorize('update', Transfer::class);
+
         $validatedData = $request->validate([
             'driver_id' => 'required|integer',
             'luggage' => 'nullable|string',
@@ -264,6 +274,8 @@ class TransfersController extends Controller
      */
     public function destroy($id): JsonResponse
     {
+        Gate::authorize('delete', Transfer::class);
+
         $deleted = $this->transferService->deleteTransfer($id);
 
         if ($deleted) {
