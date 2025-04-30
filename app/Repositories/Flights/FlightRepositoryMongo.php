@@ -14,7 +14,7 @@ use App\Models\Mongo\FlightRoute;
 use App\Models\Mongo\FlightSchedule;
 use Illuminate\Http\Request;
 
-class FlightRepositoryMongo implements FlightRepositoryInterface
+class FlightRepositoryMongo implements FlightMongoRepositoryInterface
 {
 
     public function getFlights(Request $request)
