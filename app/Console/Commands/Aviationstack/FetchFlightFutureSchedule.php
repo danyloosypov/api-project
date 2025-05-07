@@ -36,7 +36,7 @@ class FetchFlightFutureSchedule extends Command
         $total = 0;
         $requestCount = 0; // Track the number of requests made
         $iataCode = 'AHZ';
-        $date = '2025-04-04';
+        $date = '2025-05-07';
 
         // Define the flight types (arrival and departure)
         $flightTypes = [

@@ -19,6 +19,8 @@ class VehicleSeeder extends Seeder
             Vehicle::create([
                 'model' => $faker->company . ' ' . $faker->word,
                 'license' => strtoupper($faker->bothify('??-###-??')),
+                'luggage_qty' => rand(2, 5),
+                'people_qty' => rand(4, 11),
             ]);
         }
     }

@@ -1,5 +1,13 @@
 <?php
 
+use App\Models\Mongo\Flight;
+use App\Models\MySql\Order;
+use App\Models\MySql\Transfer;
+use App\Models\MySql\User;
+use App\Models\MySql\Vehicle;
+use App\Notifications\TransferCreatedNotification;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use App\Jobs\TestRedisQueue;
@@ -44,4 +52,9 @@ Route::get('/test_mongo', function () {
     } catch (\Exception $e) {
         dd($e->getMessage());
     }
+});
+
+Route::get('/test-transfers', function () {
+    $order = Order::find(35);
+    $order->notify(new TransferCreatedNotification($order));
 });

@@ -10,3 +10,5 @@ Artisan::command('inspire', function () {
 
 Schedule::command('telescope:prune')->daily();
 
+Schedule::command('app:create-transfers')->daily();
+

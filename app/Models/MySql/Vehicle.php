@@ -9,5 +9,7 @@ class Vehicle extends Model
     protected $fillable = [
         'model',
         'license',
+        'people_qty',
+        'luggage_qty'
     ];
 }

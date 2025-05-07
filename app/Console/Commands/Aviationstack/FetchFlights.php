@@ -37,7 +37,11 @@ class FetchFlights extends Command
 
         do {
             // Fetch data from the API
-            $data = AviationstackFacade::fetchFlightsData(['offset' => $offset, 'limit' => $limit]);
+            $data = AviationstackFacade::fetchFlightsData([
+                'offset' => $offset,
+                'limit' => $limit,
+                'flight_date' => '2025-05-07'
+            ]);
 
             // Check if data is not empty
             if (!empty($data['data'])) {

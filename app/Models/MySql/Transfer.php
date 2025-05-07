@@ -18,6 +18,7 @@ class Transfer extends Model
         'destination',
         'status',
         'comment',
+        'date'
     ];
 
     /**
@@ -26,6 +27,11 @@ class Transfer extends Model
     public function driver()
     {
         return $this->belongsTo(User::class, 'driver_id');
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'id_transfers');
     }
 
     public function vehicle()
